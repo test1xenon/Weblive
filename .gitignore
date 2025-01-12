@@ -37,3 +37,4 @@ config.codekit3
 .sass-cache/
 *.css.map
 node_modules/
+Portfolio.psd
