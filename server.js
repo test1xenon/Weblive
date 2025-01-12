@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const sqlite3 = require('sqlite3').verbose();
 const cors = require('cors');
-app.use(cors());
+const path = require('path');
 
 const app = express();
 const db = new sqlite3.Database('./database.db');
@@ -10,6 +10,9 @@ const db = new sqlite3.Database('./database.db');
 // Middleware
 app.use(bodyParser.json());
 app.use(cors());
+
+// Serve static files from the "public" folder
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Endpoint to save data
 app.post('/submit-request', (req, res) => {
@@ -31,7 +34,7 @@ app.post('/submit-request', (req, res) => {
 });
 
 // Endpoint to retrieve data
-app.get('/requests', (req, res) => {
+app.get('/api/requests', (req, res) => {
     db.all(`SELECT * FROM requests`, [], (err, rows) => {
         if (err) {
             return res.status(500).json({ error: 'Database error' });
@@ -40,7 +43,18 @@ app.get('/requests', (req, res) => {
     });
 });
 
+// Serve the "requests.html" file for viewing stored requests
+app.get('/requests', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'requests.html'));
+});
+
+// Default route to serve "index.html"
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
 // Start server
-app.listen(3000, () => {
-    console.log('Server running on http://localhost:3000');
+const PORT = process.env.PORT || 3000; // Use Render's PORT or fallback to 3000
+app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
 });
