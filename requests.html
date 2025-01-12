@@ -28,7 +28,7 @@
       async function fetchRequests() {
           const displayDiv = document.getElementById('requests-display');
           try {
-              const response = await fetch('https://xenon-ai.onrender.com/request');
+              const response = await fetch('http://localhost:3000/requests');
               if (!response.ok) throw new Error('Failed to fetch requests');
               const requests = await response.json();
 
