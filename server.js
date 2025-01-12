@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const sqlite3 = require('sqlite3').verbose();
 const cors = require('cors');
+const path = require('path');
 
 const app = express();
 const db = new sqlite3.Database('./database.db');
@@ -9,6 +10,14 @@ const db = new sqlite3.Database('./database.db');
 // Middleware
 app.use(bodyParser.json());
 app.use(cors());
+
+// Serve static files (CSS, JS, images, HTML)
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Serve the root URL with index.html
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 // Endpoint to save data
 app.post('/submit-request', (req, res) => {
@@ -29,7 +38,7 @@ app.post('/submit-request', (req, res) => {
     );
 });
 
-// Endpoint to retrieve data
+// Endpoint to retrieve requests
 app.get('/requests', (req, res) => {
     db.all(`SELECT * FROM requests`, [], (err, rows) => {
         if (err) {
@@ -40,6 +49,7 @@ app.get('/requests', (req, res) => {
 });
 
 // Start server
-app.listen(3000, () => {
-    console.log('Server running on http://localhost:3000');
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
 });
